@@ -1,4 +1,5 @@
 from flask import Flask, g, request, Response, make_response, session
+from flask import render_template
 from datetime import datetime, date, timedelta
 
 app = Flask(__name__)
@@ -9,6 +10,10 @@ app.config.update(
 	SESSION_COOKIE_NAME='pyweb_flask_session',
 	PERMANENT_SESSION_LIFETIME=timedelta(31)      # 31일 동안 유지되고 삭제된다.
 )
+
+@app.route("/tmpl")
+def t():
+  return render_template('index.html',title="Title")
 
 @app.route('/wc') # cookie 생성
 def wc():
