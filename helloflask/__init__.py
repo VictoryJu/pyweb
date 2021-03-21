@@ -1,9 +1,10 @@
 from flask import Flask, g, request, Response, make_response, session
-from flask import render_template
+from flask import render_template, Markup
 from datetime import datetime, date, timedelta
 
 app = Flask(__name__)
 app.debug = True
+# app.jinja_env.trim_blocks = True # 공백이나 개행을 없애고싶을때는 -을 사용하는것을 권장한다.
 
 app.config.update(
 	SECRET_KEY='X1243yRH!mMwf',
@@ -11,9 +12,59 @@ app.config.update(
 	PERMANENT_SESSION_LIFETIME=timedelta(31)      # 31일 동안 유지되고 삭제된다.
 )
 
+@app.route('/main')
+def main():
+  return render_template('main.html',title="THIS MAIN")
+
+
+class Nav:
+  def __init__(self, title, url='#', children=[]):
+    self.title = title
+    self.url = url
+    self.children = children
+
+
+@app.route('/tmpl3')
+def tmpl3():
+  py = Nav("파이썬","https://www.naver.com/")
+  java = Nav("자바","https://www.naver.com/")
+  t_prg = Nav("프로그래밍언어","https://www.naver.com/",[py,java])
+  
+  jinja = Nav("Jinja","https://www.naver.com/")
+  gc = Nav("Genshi, Cheetah","https://www.naver.com/")
+  flask = Nav("플라스크","https://www.naver.com/",[jinja,gc])
+  
+  spr = Nav("스프링","https://www.naver.com/")
+  ndjs = Nav("노드JS","https://www.naver.com/")
+  t_webf = Nav("웹 프레임워크","https://www.naver.com/",[flask,spr,ndjs])
+  
+  my = Nav("나의 일상","https://www.naver.com/")
+  issue = Nav("이슈게시판","https://www.naver.com/")
+  t_others = Nav("기타","https://www.naver.com/",[my,issue])
+
+  return render_template("index.html", navs=[t_prg,t_webf,t_others])
+
+
+@app.route('/tmpl2')
+def tmpl2():
+  a = (1, "만남1", "김건모", False, [])
+  b = (2, "만남2", "노사연", True, [a])
+  c = (3, "만남3", "익명", False, [a,b])
+  d = (4, "만남4", "익명", False, [a,b,c])
+
+  return render_template("index.html", lst2=[a,b,c,d])
+
+
+
 @app.route("/tmpl")
 def t():
-  return render_template('index.html',title="Title")
+  
+  
+  tit = Markup("<strong>Title</strong>") #마크업 객체 생성 title은 마크업객체가 된다.
+  mu = Markup("<h1>iii = <i>%s</i></h1>") # 반복되는 html을 컴포넌트화 시켜놓을수있음
+  h = mu % "Italic"
+  lst = [ ("만남1", "김건모",True), ("만남2", "노사연",False), ("만남3", "노사봉",True) ]
+  return render_template('index.html',title=tit,mu=h,lst=lst) 
 
 @app.route('/wc') # cookie 생성
 def wc():

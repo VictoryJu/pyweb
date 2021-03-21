@@ -1,12 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jinja Test Pahe</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}"">
+
 </head>
+
 <body>
-  <h1>Jinja Test:{{title}}</h1>
-</body>
+
+  <div>Jinja Test:{{title}} - {{mu}} </div>
+  <hr>
+  <div>
+    Copyright <a href=" /tmpl3">start jinja</a>
+  Copyright <a href="{{ url_for('tmpl3') }}">start jinja</a>
+  </div>
+
+  <ul>
+    {% for rank, title, name, hide, ref in lst2 recursive %}
+    <li>
+      {{loop.index}} - <small>{{title}}</small>: {{name}}
+      {%- if ref -%}
+      {% set outer_loop = loop %}
+      {% for ref_song in ref %}
+      <p>{{outer_loop.index}} - {{loop.index}} : {{ ref_song[1] }}</p>
+      {% endfor %}
+      {%- endif %}
+    </li>
+    {% endfor %}
+  </ul>
+
+  <ul>
+    {% for nav in navs recursive %}
+    <li>
+      <a href="{{nav.url | e}}">{{nav.title}} - {{loop.depth}}</a>
+      {%- if nav.children -%}
+      <ul class="{% if loop.depth != 1%} font-sm {% endif %}">
+        {{ loop(nav.children) }}</ul>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+
+
+  <hr>
+
+  <ul>
+    <!-- {% for item in lst %} 
+      <li>{{item[0]}}: {{item[1]}}</li>
+    {% endfor %} 
+    이렇게 html을 작성할 시 어느 부분에 title이오고 name이 오는지 모름
+    밑에 처럼 작성하는것이 좋음  
+    -->
+
+    {% for title, name in lst %}
+    <li>{{title}}: {{name}} - {{loop.first}}</li>
+    {% endfor %}
+  </ul>
+
+  <ul>
+    {% for title, name, hide in lst if not hide %}
+    <li class="{{loop.cycle('aaa','bbb','')}}">{{title}}: {{name}} - {{loop.last}}</li>
+
+    {% else %}
+    <li>There is no data.</li>
+    {% endfor %}
+  </ul>
+
+  {{ "}}>> <strong>Strong</strong>"}}
+  <!-- 태그를 입력하고싶을때 ""이나 ''안에다가 넣어주면 됨-->
+  {{ "<strong>Strong</strong>" | safe}}
+
+  <hr>
+  <pre>
+    {% raw %}
+      밑에 소스코드를 그대로 올리고싶을때 raw를 사용하면 된다.
+      {%- if True -%}
+        TTT
+      {% endif %} qqq
+    {% endraw %}
+  </pre>
+  </body>
+
 </html>
