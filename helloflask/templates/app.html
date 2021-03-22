@@ -1,11 +1,68 @@
 {% extends "base.html"%}
+{% import "macro/tests.html" as cm with context%}
+{% from "macro/tests.html" import test_macro %}
+{% from "macro/forms.html" 
+import input,radios,radio,textarea,checkbox,select, modal %}
 
 {% block test %}
-  <p>{{ test_macro('TTTTTTTTTTTTTTT')}}</p>
-
-  {% call(x) test_macro2('Hong', 'bbb') %}
+  <p>{{ttt}}::{{ cm.test_macro('TTTTTTTTTTTTTTT')}}</p>
+  <p>{{ test_macro('WWWWWWWW')}}</p>
+  <p>{{today | ymd('%y-%m') | safe}}</p>
+  <p>{{today | simpledate | safe}}</p>
+  {% call(x) cm.test_macro2('Hong', 'bbb') %}
     <p>This is app.html.call block: {{x}}</p>
   {% endcall %}
+
+  <form class="container">
+    <div class="form-group">
+      {{radio('r1','rdo','val1','Value1')}}
+      {{radio('r2','rdo','val2','Value2',"cheked")}}
+      {{radio('r3','rdo','val3','Value3')}}
+      <div class="form-check">
+        <input class="form-check-input" type="radio"
+                neme="examplename"
+                id="exampleid"
+                value="examplevaleu" checked>
+      <label class="form-check-label" for="exampleid">
+          Default radio
+      </label>
+    </div>
+  </div>
+  {{radios(radioList)}}
+
+  {{textarea('idta','content','default value')}}
+
+  {{checkbox(dict(id='chk1',name='chkname1',checked='checked',text="TEXT"))}}
+
+  {{select([ dict(id='selid1', text='seltext1',selected=False),
+            dict(id='selid2',text='seltext2',selected=True) ]) }}
+</form>
+
+<button type="button" onclick="openModal('mdl1')" class="btn btn-primary" >
+  Open modal Test</button>
+
+{% call modal('mdl1','테스트 모달','fas fa-users', True, "fn_teset()") %}
+    <h3>Modal body</h3>
+    <script>
+      function fn_teset(){
+         alert('qqqqqqqq')
+      }
+    </script>
+{% endcall %}
+
+
+
+  <input type="text" id="userid" name="userid" value="123" class="form-control">
+
+  {{input('password','pw')}}
+
+  <textarea id="" name="" rows="5" class="form-control"></textarea>
+  <select name="" id="">
+    <option value="{{val}}">{{text}}</option>
+    <option value=""></option>
+    <option value=""></option>
+  </select>
+
 {% endblock %}
 
 {% block main %}

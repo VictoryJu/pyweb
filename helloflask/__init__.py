@@ -1,5 +1,5 @@
 from flask import Flask, g, request, Response, make_response, session
-from flask import render_template, Markup
+from flask import render_template, Markup, url_for
 from datetime import datetime, date, timedelta
 
 app = Flask(__name__)
@@ -12,12 +12,45 @@ app.config.update(
 	PERMANENT_SESSION_LIFETIME=timedelta(31)      # 31일 동안 유지되고 삭제된다.
 )
 
+
+@app.template_filter('ymd')               # cf. Handlebars' helper
+def datetime_ymd(dt, fmt='%m-%d'):
+    if isinstance(dt, date):
+        return "<strong>%s</strong>" % dt.strftime(fmt)
+    else:
+        return dt
+
+@app.template_filter('simpledate')               # cf. Handlebars' helper
+def simpledate(dt):
+    if not isinstance(dt, date):
+        dt = datetime.strptime(dt,'%Y-%m-%d %H:%M')
+    
+    #if (datetime.now()-dt) <timedelta(1):
+    if (datetime.now()-dt).days <1:
+      fmt="%H:%M"
+    else:
+      fmt="%m/%d"
+    
+    return "<strong>%s</strong>" % dt.strftime(fmt)
+    
+
+
 @app.route('/')
 def idx():
-  return render_template('app.html',ttt='TestTTT')
+  # rds=[]
+  # for i in [1,2,3]:
+  #   id = 'r' + str(i)
+  #   name = 'radiotest'
+  #   value = i
+  #   checked = ''
+  #   if i==2:
+  #     checked = 'checked'
+  #   text = 'RadioTest' + str(i)
+  #   rds.append( FormInput(id,name,value,cheked,text))
 
-
-
+  # today = date.today()
+  today = datetime.now()
+  return render_template('app.html',ttt='TestTTT', today=today)
 
 
 
