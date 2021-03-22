@@ -12,6 +12,15 @@ app.config.update(
 	PERMANENT_SESSION_LIFETIME=timedelta(31)      # 31일 동안 유지되고 삭제된다.
 )
 
+@app.route('/')
+def idx():
+  return render_template('app.html',ttt='TestTTT')
+
+
+
+
+
+
 @app.route('/main')
 def main():
   return render_template('main.html',title="THIS MAIN")
@@ -146,7 +155,7 @@ def res1():
 # def hellowordl2():
 #   return "Hello World!" + getattr(g,'str','111')
 
-@app.route("/")
-def helloworld():
-  return "Hello Flask World!"
+# @app.route("/")
+# def helloworld():
+#   return "Hello Flask World!"
 
