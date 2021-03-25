@@ -1,6 +1,7 @@
 from flask import Flask, g, request, Response, make_response, session
 from flask import render_template, Markup, url_for
 from datetime import datetime, date, timedelta
+from dateutil.relativedelta import relativedelta
 
 app = Flask(__name__)
 app.debug = True
@@ -23,7 +24,7 @@ def datetime_ymd(dt, fmt='%m-%d'):
 @app.template_filter('simpledate')               # cf. Handlebars' helper
 def simpledate(dt):
     if not isinstance(dt, date):
-        dt = datetime.strptime(dt,'%Y-%m-%d %H:%M')
+        dt = datetime.strptime(dt,'%Y-%m-%d')
     
     #if (datetime.now()-dt) <timedelta(1):
     if (datetime.now()-dt).days <1:
@@ -32,8 +33,34 @@ def simpledate(dt):
       fmt="%m/%d"
     
     return "<strong>%s</strong>" % dt.strftime(fmt)
-    
 
+def make_date(dt,fmt):
+  if not isinstance(dt, date):
+    return datetime.strptime(dt,fmt)
+  else:
+    return dt
+
+@app.template_filter('sdt')
+def sdt(dt, fmt="%Y-%m-%d"):
+  d = make_date(dt,fmt)
+  wd = d.weekday()
+  # if wd == 6:
+  #   return 1
+  # else:
+  #   return wd
+  return (1 if wd == 6 else wd) * -1
+
+@app.template_filter('edt')
+def edt(dt, fmt="%Y-%m-%d"):
+  d = make_date(dt,fmt)
+  nextmonth = d + relativedelta(months=1)
+  return (nextmonth - timedelta(1)).day + 1
+
+
+@app.template_filter('month')
+def month(dt, fmt="%Y-%m-%d"):
+  d = make_date(dt,fmt)
+  return d.month
 
 @app.route('/')
 def idx():
@@ -49,8 +76,14 @@ def idx():
   #   rds.append( FormInput(id,name,value,cheked,text))
 
   # today = date.today()
-  today = datetime.now()
-  return render_template('app.html',ttt='TestTTT', today=today)
+  today = '2021-03-26'
+  d = datetime.strptime("2021-03-26","%Y-%m-%d")
+
+#year = 2021
+  year = request.args.get('year',date.today().year,int)
+
+  #today = datetime.now()
+  return render_template('app.html',year=year,ttt='TestTTT', today=today)
 
 
 
@@ -84,8 +117,10 @@ def tmpl3():
   issue = Nav("이슈게시판","https://www.naver.com/")
   t_others = Nav("기타","https://www.naver.com/",[my,issue])
 
+
   return render_template("index.html", navs=[t_prg,t_webf,t_others])
 
+  
 
 @app.route('/tmpl2')
 def tmpl2():

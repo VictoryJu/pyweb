@@ -1,5 +1,10 @@
 
-
+tr > :first-child{
+  color: red;
+}
+tr > :last-child{
+  color: blue;
+}
 .aaa{ font-weight: 700;}
 .bbb{ color: red; }
 .sub{ color: blue; }

@@ -1,30 +1,74 @@
 {% extends "base.html"%}
 {% import "macro/tests.html" as cm with context%}
 {% from "macro/tests.html" import test_macro %}
-{% from "macro/forms.html" 
+{% from "macro/forms.html"
 import input,radios,radio,textarea,checkbox,select, modal %}
 
-{% block test %}
-  <p>{{ttt}}::{{ cm.test_macro('TTTTTTTTTTTTTTT')}}</p>
-  <p>{{ test_macro('WWWWWWWW')}}</p>
-  <p>{{today | ymd('%y-%m') | safe}}</p>
-  <p>{{today | simpledate | safe}}</p>
-  {% call(x) cm.test_macro2('Hong', 'bbb') %}
-    <p>This is app.html.call block: {{x}}</p>
-  {% endcall %}
+{% macro cal(dt) %}
+<div class="container text-center">
+  <h1>{{dt | month}} 월</h1>
+  <table class="table table-bordered table-sm">
+      <thead>
+        <tr>
+          {%- for w in '일월화수목금토' %}
+            <th>{{w}}</th>
+          {% endfor -%}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in range(dt | sdt, dt| edt) | batch(7, '&nbsp;') %}
+        <tr>
+            {% for col in row %}
+                <td>{% if ((col|int) <= 0 ) %}&nbsp;{%else%}{{col | safe}}{%endif%}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+  </table>
+</div>
+{% endmacro %}
 
-  <form class="container">
-    <div class="form-group">
-      {{radio('r1','rdo','val1','Value1')}}
-      {{radio('r2','rdo','val2','Value2',"cheked")}}
-      {{radio('r3','rdo','val3','Value3')}}
-      <div class="form-check">
-        <input class="form-check-input" type="radio"
-                neme="examplename"
-                id="exampleid"
-                value="examplevaleu" checked>
+
+{% block test %}
+
+
+<p>{{ttt}}::{{ cm.test_macro('TTTTTTTTTTTTTTT')}}</p>
+<p>{{ test_macro('WWWWWWWW')}}</p>
+<p>{{today | ymd('%y-%m') | safe}}</p>
+<p>{{today | simpledate | safe}}</p>
+{% call(x) cm.test_macro2('Hong', 'bbb') %}
+<p>This is app.html.call block: {{x}}</p>
+{% endcall %}
+
+<div>
+  <h1 class="text-center text-primary">
+    <small><a href="/?year={{year - 1}}" class="text-muted">{{year -1}}</a></small>
+    {{year}} 년
+    <small><a href="/?year={{year + 1}}" class="text-muted">{{year +1}}</a></small>
+  </h1>
+  <div class = "row">
+  {% for mm in range(1,13) | batch(3) %}
+  
+      {% for m in mm %}
+        <div class="col">
+        {% set dt = "%s-%s-01" %(year,m) %}
+        {{cal(dt)}}
+        </div>
+      {% endfor %}
+  {%endfor%}
+  </div>
+</div>
+
+
+<form class="container">
+  <div class="form-group">
+    {{radio('r1','rdo','val1','Value1')}}
+    {{radio('r2','rdo','val2','Value2',"cheked")}}
+    {{radio('r3','rdo','val3','Value3')}}
+    <div class="form-check">
+      <input class="form-check-input" type="radio" neme="examplename" id="exampleid" value="examplevaleu" checked>
       <label class="form-check-label" for="exampleid">
-          Default radio
+        Default radio
       </label>
     </div>
   </div>
@@ -35,33 +79,33 @@ import input,radios,radio,textarea,checkbox,select, modal %}
   {{checkbox(dict(id='chk1',name='chkname1',checked='checked',text="TEXT"))}}
 
   {{select([ dict(id='selid1', text='seltext1',selected=False),
-            dict(id='selid2',text='seltext2',selected=True) ]) }}
+  dict(id='selid2',text='seltext2',selected=True) ]) }}
 </form>
 
-<button type="button" onclick="openModal('mdl1')" class="btn btn-primary" >
+<button type="button" onclick="openModal('mdl1')" class="btn btn-primary">
   Open modal Test</button>
 
 {% call modal('mdl1','테스트 모달','fas fa-users', True, "fn_teset()") %}
-    <h3>Modal body</h3>
-    <script>
-      function fn_teset(){
-         alert('qqqqqqqq')
-      }
-    </script>
+<h3>Modal body</h3>
+<script>
+  function fn_teset() {
+    alert('qqqqqqqq')
+  }
+</script>
 {% endcall %}
 
 
 
-  <input type="text" id="userid" name="userid" value="123" class="form-control">
+<input type="text" id="userid" name="userid" value="123" class="form-control">
 
-  {{input('password','pw')}}
+{{input('password','pw')}}
 
-  <textarea id="" name="" rows="5" class="form-control"></textarea>
-  <select name="" id="">
-    <option value="{{val}}">{{text}}</option>
-    <option value=""></option>
-    <option value=""></option>
-  </select>
+<textarea id="" name="" rows="5" class="form-control"></textarea>
+<select name="" id="">
+  <option value="{{val}}">{{text}}</option>
+  <option value=""></option>
+  <option value=""></option>
+</select>
 
 {% endblock %}
 
@@ -74,14 +118,14 @@ import input,radios,radio,textarea,checkbox,select, modal %}
         <a href="#!">
           <div class="mask" id="masks" style="background-color: rgba(251, 251, 251, 0.15);"></div>
         </a> -->
-      </div>
     </div>
+  </div>
 
-    <div class="col-md-12 mb-12">
-      <h2><strong>Melon Top 100</strong></h2>
+  <div class="col-md-12 mb-12">
+    <h2><strong>Melon Top 100</strong></h2>
 
-    </div>
-  
+  </div>
+
 
 </section>
 <!--Section: News of the day-->
@@ -130,10 +174,13 @@ import input,radios,radio,textarea,checkbox,select, modal %}
         <!-- News -->
         <a href="" class="text-dark">
           <div class="row ">
-            <div class="col-2"><h1 class="text-primary">1</h1></div>
+            <div class="col-2">
+              <h1 class="text-primary">1</h1>
+            </div>
 
             <div class="col-2">
-              <img src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMTAzMDNfMjc3%2FMDAxNjE0NzY4MTE5NjU4.4QNoyjrkg0HPSS7CafJD-ops9aBnLg4loDnvWxwlZJkg.RC9j_gWZroVT9Atdqf8qrRAib0wwkrJ9Rwce-Xk22J4g.JPEG.rboder%2Foutput_332064270.jpg&type=a340"
+              <img
+                src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMTAzMDNfMjc3%2FMDAxNjE0NzY4MTE5NjU4.4QNoyjrkg0HPSS7CafJD-ops9aBnLg4loDnvWxwlZJkg.RC9j_gWZroVT9Atdqf8qrRAib0wwkrJ9Rwce-Xk22J4g.JPEG.rboder%2Foutput_332064270.jpg&type=a340"
                 class="img-fluid shadow-1-strong rounded" alt="" />
             </div>
 
@@ -143,19 +190,22 @@ import input,radios,radio,textarea,checkbox,select, modal %}
                 <u><small class="text-muted"><i class="fas fa-compact-disc"></i> Rollin'</small></u>
               </p>
             </div>
-        
+
           </div>
           <div class="row">
             <div class="col-2"></div>
             <div class="col">
               <ul class="list-group list-group-flush">
                 <li class="list-group-item"><small class="text-muted">작사</small>
-                <strong class="float-right">용감한형제</strong></li>
+                  <strong class="float-right">용감한형제</strong>
+                </li>
                 <li class="list-group-item"><small class="text-muted">작곡</small>
-                <strong class="float-right">차쿤</strong></li>
+                  <strong class="float-right">차쿤</strong>
+                </li>
                 <li class="list-group-item"><i class="far fa-thumbs-up text-muted"></i>
-                <strong class="float-right">10</strong></li>
-                
+                  <strong class="float-right">10</strong>
+                </li>
+
               </ul>
             </div>
           </div>
@@ -167,8 +217,8 @@ import input,radios,radio,textarea,checkbox,select, modal %}
         <a href="" class="text-dark">
           <div class="row mb-4 border-bottom pb-2">
             <div class="col-3">
-              <img src="https://mdbootstrap.com/img/new/standard/city/042.jpg"
-                class="img-fluid shadow-1-strong rounded" alt="" />
+              <img src="https://mdbootstrap.com/img/new/standard/city/042.jpg" class="img-fluid shadow-1-strong rounded"
+                alt="" />
             </div>
 
             <div class="col-9">
@@ -184,8 +234,8 @@ import input,radios,radio,textarea,checkbox,select, modal %}
         <a href="" class="text-dark">
           <div class="row mb-4 border-bottom pb-2">
             <div class="col-3">
-              <img src="https://mdbootstrap.com/img/new/standard/city/043.jpg"
-                class="img-fluid shadow-1-strong rounded" alt="" />
+              <img src="https://mdbootstrap.com/img/new/standard/city/043.jpg" class="img-fluid shadow-1-strong rounded"
+                alt="" />
             </div>
 
             <div class="col-9">
@@ -201,8 +251,8 @@ import input,radios,radio,textarea,checkbox,select, modal %}
         <a href="" class="text-dark">
           <div class="row mb-4 border-bottom pb-2">
             <div class="col-3">
-              <img src="https://mdbootstrap.com/img/new/standard/city/044.jpg"
-                class="img-fluid shadow-1-strong rounded" alt="" />
+              <img src="https://mdbootstrap.com/img/new/standard/city/044.jpg" class="img-fluid shadow-1-strong rounded"
+                alt="" />
             </div>
 
             <div class="col-9">
@@ -259,8 +309,8 @@ import input,radios,radio,textarea,checkbox,select, modal %}
         <a href="" class="text-dark">
           <div class="row mb-4 border-bottom pb-2">
             <div class="col-3">
-              <img src="https://mdbootstrap.com/img/new/standard/city/031.jpg"
-                class="img-fluid shadow-1-strong rounded" alt="" />
+              <img src="https://mdbootstrap.com/img/new/standard/city/031.jpg" class="img-fluid shadow-1-strong rounded"
+                alt="" />
             </div>
 
             <div class="col-9">
@@ -276,8 +326,8 @@ import input,radios,radio,textarea,checkbox,select, modal %}
         <a href="" class="text-dark">
           <div class="row mb-4 border-bottom pb-2">
             <div class="col-3">
-              <img src="https://mdbootstrap.com/img/new/standard/city/032.jpg"
-                class="img-fluid shadow-1-strong rounded" alt="" />
+              <img src="https://mdbootstrap.com/img/new/standard/city/032.jpg" class="img-fluid shadow-1-strong rounded"
+                alt="" />
             </div>
 
             <div class="col-9">
@@ -293,8 +343,8 @@ import input,radios,radio,textarea,checkbox,select, modal %}
         <a href="" class="text-dark">
           <div class="row mb-4 border-bottom pb-2">
             <div class="col-3">
-              <img src="https://mdbootstrap.com/img/new/standard/city/033.jpg"
-                class="img-fluid shadow-1-strong rounded" alt="" />
+              <img src="https://mdbootstrap.com/img/new/standard/city/033.jpg" class="img-fluid shadow-1-strong rounded"
+                alt="" />
             </div>
 
             <div class="col-9">
@@ -310,8 +360,8 @@ import input,radios,radio,textarea,checkbox,select, modal %}
         <a href="" class="text-dark">
           <div class="row mb-4 border-bottom pb-2">
             <div class="col-3">
-              <img src="https://mdbootstrap.com/img/new/standard/city/034.jpg"
-                class="img-fluid shadow-1-strong rounded" alt="" />
+              <img src="https://mdbootstrap.com/img/new/standard/city/034.jpg" class="img-fluid shadow-1-strong rounded"
+                alt="" />
             </div>
 
             <div class="col-9">
@@ -322,5 +372,5 @@ import input,radios,radio,textarea,checkbox,select, modal %}
             </div>
           </div>
         </a>
-      </section>
+</section>
 {% endblock %}
