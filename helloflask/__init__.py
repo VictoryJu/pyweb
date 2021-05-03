@@ -2,6 +2,7 @@ from flask import Flask, g, request, Response, make_response, session
 from flask import render_template, Markup, url_for
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
+from pyoembed import oEmbed, PyOembedException
 
 app = Flask(__name__)
 app.debug = True
@@ -12,6 +13,20 @@ app.config.update(
 	SESSION_COOKIE_NAME='pyweb_flask_session',
 	PERMANENT_SESSION_LIFETIME=timedelta(31)      # 31일 동안 유지되고 삭제된다.
 )
+
+@app.route("/test")
+def oEmbed():
+  return render_template('stay.html')
+
+@app.route("/embed",methods=['GET'])
+def getOembed():
+
+  data = oEmbed('https://www.youtube.com/watch?v=dBD54EZIrZo')
+
+  if data['type'] == 'video':
+    return render_template('video.html',data_list=data)
+  elif data['type'] == 'link':
+    return render_template('link.html',data_list=data)
 
 
 @app.template_filter('ymd')               # cf. Handlebars' helper
