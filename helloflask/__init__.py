@@ -3,6 +3,9 @@ from flask import render_template, Markup, url_for
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
 from pyoembed import oEmbed, PyOembedException
+from pyembed.core import PyEmbed
+
+
 
 app = Flask(__name__)
 app.debug = True
@@ -18,11 +21,10 @@ app.config.update(
 def oEmbed():
   return render_template('stay.html')
 
-@app.route("/embed",methods=['GET'])
+@app.route("/embed",methods=['POST'])
 def getOembed():
-
-  data = oEmbed('https://www.youtube.com/watch?v=dBD54EZIrZo')
-
+  url = request.form["address"]
+  address = oEmbed(url)
   if data['type'] == 'video':
     return render_template('video.html',data_list=data)
   elif data['type'] == 'link':
